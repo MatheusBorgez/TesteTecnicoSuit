@@ -13,6 +13,7 @@ public class Costumer {
 
     private String name;
 
+    @Column(name = "vip")
     private boolean isVip;
 
     @Column(nullable = false)
