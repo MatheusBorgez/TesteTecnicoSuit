@@ -3,6 +3,7 @@ package suit.testepraticosuit.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import suit.testepraticosuit.domain.Costumer;
 import suit.testepraticosuit.domain.CreditLimitHistory;
 import suit.testepraticosuit.repository.CostumerLimitHistoryRepository;
 import suit.testepraticosuit.repository.CostumerRepository;
@@ -20,22 +21,33 @@ public class CreditLimitService {
 
     @Transactional
     public void updateCreditLimit(Long costumerId, BigDecimal newLimit, String updatedBy) {
-        // Lógica para atualizar o limite de crédito do cliente
-        // 1. Buscar o cliente pelo ID
-        // 2. Atualizar o limite de crédito
-        // 3. Salvar o histórico da alteração no CostumerLimitHistory
-        // 4. Salvar as alterações no cliente
+        var costumer = costumerRepository.findById(costumerId).orElseThrow(() -> new IllegalArgumentException("Costumer not found"));
+
+        BigDecimal oldLimit = costumer.getCreditLimit();
+        costumer.setCreditLimit(newLimit);
+        saveHistory(newLimit, updatedBy, costumer, oldLimit);
+        costumerRepository.save(costumer);
     }
 
     public BigDecimal getCreditLimit(Long costumerId) {
-        // Lógica para obter o limite de crédito do cliente
+        // Lï¿½gica para obter o limite de crï¿½dito do cliente
         return BigDecimal.ZERO;
     }
 
     public List<CreditLimitHistory> getCreditLimitHistory(Long costumerId) {
-        // Lógica para obter o histórico de alterações do limite de crédito do cliente
+        // Lï¿½gica para obter o histï¿½rico de alteraï¿½ï¿½es do limite de crï¿½dito do cliente
         return new ArrayList<>();
     }
 
+    private void saveHistory(BigDecimal newLimit, String updatedBy, Costumer costumer, BigDecimal oldLimit) {
+        var history = new CreditLimitHistory();
+        history.setCustomerId(costumer.getId());
+        history.setOldLimit(oldLimit);
+        history.setNewLimit(newLimit);
+        history.setChangedBy(updatedBy);
+        history.setChangedAt(java.time.LocalDateTime.now());
+
+        costumerLimitHistoryRepository.save(history);
+    }
 
 }

@@ -22,20 +22,17 @@ public class CreditLimitController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BigDecimal> getCreditLimit(@PathVariable Long customerId) {
-        // Lógica para obter o limite de crédito do cliente
         return ResponseEntity.ok(creditLimitService.getCreditLimit(customerId));
     }
 
     @GetMapping("/{id}/history")
     public ResponseEntity<List<CreditLimitHistory>> getCreditLimitHistory(Long customerId) {
-        // Lógica para obter o histórico de alterações do limite de crédito do cliente
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CREDIT_LIMIT_ADMIN')")
     public ResponseEntity<Void> updateCreditLimit(@PathVariable Long costumerId, @RequestBody @Valid UpdateLimitRequest request, Authentication auth) {
-        // Lógica para atualizar o limite de crédito do cliente
         creditLimitService.updateCreditLimit(request.costumerId(), request.newLimit(), auth.getName());
         return ResponseEntity.ok().build();
     }

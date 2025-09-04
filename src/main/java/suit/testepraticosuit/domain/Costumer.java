@@ -1,9 +1,11 @@
 package suit.testepraticosuit.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+@Data
 @Entity
 public class Costumer {
 
