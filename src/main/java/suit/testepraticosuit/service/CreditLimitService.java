@@ -3,6 +3,7 @@ package suit.testepraticosuit.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import suit.testepraticosuit.config.CreditLimitConfig;
 import suit.testepraticosuit.domain.Costumer;
 import suit.testepraticosuit.domain.CreditLimitHistory;
 import suit.testepraticosuit.repository.CostumerLimitHistoryRepository;
@@ -18,10 +19,20 @@ public class CreditLimitService {
 
     private final CostumerLimitHistoryRepository costumerLimitHistoryRepository;
     private final CostumerRepository costumerRepository;
+    private final CreditLimitConfig creditLimitConfig;
 
     @Transactional
     public void updateCreditLimit(Long costumerId, BigDecimal newLimit, String updatedBy) {
+
+        if (newLimit == null || newLimit.signum() == -1) {
+            throw new IllegalArgumentException("The new credit limit cannot be a negative number.");
+        }
+
         var costumer = costumerRepository.findById(costumerId).orElseThrow(() -> new IllegalArgumentException("Costumer not found"));
+
+        if (costumer.isVip() && newLimit.compareTo(creditLimitConfig.getVipMinCreditValue()) < 0) {
+            throw new IllegalArgumentException("VIP Costumers cannot have less credit limit then " + creditLimitConfig.getVipMinCreditValue());
+        }
 
         BigDecimal oldLimit = costumer.getCreditLimit();
         costumer.setCreditLimit(newLimit);
