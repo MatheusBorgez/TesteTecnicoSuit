@@ -1,6 +1,47 @@
 # TesteTecnicoSuit
 Teste técnico para empresa Suitpay
 
+Teste Técnico - Desenvolvedor Java
+Contexto
+A SuitPay está criando um novo módulo para gerenciar limites de crédito de clientes. Este módulo será integrado a outras partes do sistema e precisará garantir alta performance, segurança e escalabilidade.
+Você será responsável por projetar e implementar parte deste módulo, atendendo aos requisitos descritos abaixo.
+
+
+
+
+Parte 1: Implementação Prática
+Cenário
+Implemente uma API RESTful utilizando Spring Boot, Hibernate que permita gerenciar limites de crédito dos clientes. A aplicação deve atender aos seguintes requisitos:
+
+Funcionalidades:
+
+Consultar Limite de Crédito: Um endpoint para retornar o limite atual de um cliente pelo id.
+
+Atualizar Limite de Crédito: Um endpoint que permita atualizar o limite, respeitando regras de negócio.
+
+Histórico de Alterações: Todas as alterações de limite devem ser registradas com informações de quem fez a alteração e a data/hora.
+
+Regras de Negócio:
+
+Limites não podem ser negativos.
+
+Somente usuários com a role "CREDIT_LIMIT_ADMIN" podem alterar limites.
+
+Clientes VIP (indicados por um atributo isVip) têm um limite mínimo obrigatório definido no sistema.
+
+Banco de Dados:
+
+Utilize SQL Server para simular o banco de dados.
+
+Extras (Opcional):
+
+Implemente autenticação e autorização utilizando Spring Security.
+
+Adicione paginação no endpoint de histórico.
+
+Utilize o Gradle como gerenciador de dependências.
+
+
 
 Parte 2: Análise Crítica
 Trecho de Código
