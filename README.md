@@ -53,13 +53,30 @@ Perguntas:
 Dado o contexto e requisitos do teste:
 
 Você consegue encontrar algum problema neste código?
+R:
+Uso de double ao invés de BigDecimal que é o recomendado para operações financeiras.
+Uso de OrElseThrow sem especificar a exceção nem nenhuma mensagem ou tratativa.
+Falta da anotação @Transacional
 
 Como você melhoraria esta implementação para atender aos requisitos de segurança, boas práticas e escalabilidade?
+R:
+Usaria BigDecimal ao invés de double.
+Dispararia uma exceção específica com uma mensagem mais descritiva.
+Adicionaria a anotação @Transactional para deixar a transação atômica.
+
 
 Parte 3: Questões Teóricas
 Considerando o contexto em que a SuitPay atua e as tecnologias utilizadas:
 Explique como você trataria um cenário de alto volume de leitura e escrita em uma entidade crítica para o sistema.
+R:
+Usaria CQRS para dividir as operações de consulta e leitura
+Usaria Redis ou outro cache para facilitar a leitura de entidades que não mudam muito
 
 Quais mecanismos no geral que você utilizaria para garantir que o sistema, banco de dados e integrações permaneçam performáticos ao lidar com alta demanda de clientes? Quais os possíveis gargalos?
+R:
+Usaria sistema de filas para realizar as operações assincronamente
 
 Como você implementaria a funcionalidade de "limite mínimo para clientes VIP" de forma eficiente?
+R:
+Adicionaria uma validação no service antes da inclusão
+Para garantir usaria uma trigger no banco de dados
