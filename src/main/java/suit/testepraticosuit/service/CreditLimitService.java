@@ -2,11 +2,15 @@ package suit.testepraticosuit.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import suit.testepraticosuit.config.CreditLimitConfig;
 import suit.testepraticosuit.domain.Costumer;
 import suit.testepraticosuit.domain.CreditLimitHistory;
-import suit.testepraticosuit.repository.CostumerLimitHistoryRepository;
+import suit.testepraticosuit.repository.CreditLimitHistoryRepository;
 import suit.testepraticosuit.repository.CostumerRepository;
 
 import java.math.BigDecimal;
@@ -17,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CreditLimitService {
 
-    private final CostumerLimitHistoryRepository costumerLimitHistoryRepository;
+    private final CreditLimitHistoryRepository creditLimitHistoryRepository;
     private final CostumerRepository costumerRepository;
     private final CreditLimitConfig creditLimitConfig;
 
@@ -31,7 +35,7 @@ public class CreditLimitService {
         var costumer = costumerRepository.findById(costumerId).orElseThrow(() -> new IllegalArgumentException("Costumer not found"));
 
         if (costumer.isVip() && newLimit.compareTo(creditLimitConfig.getVipMinCreditValue()) < 0) {
-            throw new IllegalArgumentException("VIP Costumers cannot have less credit limit then " + creditLimitConfig.getVipMinCreditValue());
+            throw new IllegalArgumentException("VIP Costumers cannot have less credit limit than " + creditLimitConfig.getVipMinCreditValue());
         }
 
         BigDecimal oldLimit = costumer.getCreditLimit();
@@ -41,13 +45,23 @@ public class CreditLimitService {
     }
 
     public BigDecimal getCreditLimit(Long costumerId) {
-        // L�gica para obter o limite de cr�dito do cliente
-        return BigDecimal.ZERO;
+        return costumerRepository.findById(costumerId)
+                .orElseThrow(() -> new IllegalArgumentException("Costumer not found"))
+                .getCreditLimit();
     }
 
-    public List<CreditLimitHistory> getCreditLimitHistory(Long costumerId) {
-        // L�gica para obter o hist�rico de altera��es do limite de cr�dito do cliente
-        return new ArrayList<>();
+    public Page<CreditLimitHistory> getCreditLimitHistory(Long costumerId, Pageable pageable) {
+
+        if (!costumerRepository.existsById(costumerId)) {
+            throw new IllegalArgumentException("Costumer not found");
+        }
+
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "changedAt"));
+        }
+
+        return creditLimitHistoryRepository.findByCustomerId(costumerId, pageable);
     }
 
     private void saveHistory(BigDecimal newLimit, String updatedBy, Costumer costumer, BigDecimal oldLimit) {
@@ -58,7 +72,7 @@ public class CreditLimitService {
         history.setChangedBy(updatedBy);
         history.setChangedAt(java.time.LocalDateTime.now());
 
-        costumerLimitHistoryRepository.save(history);
+        creditLimitHistoryRepository.save(history);
     }
 
 }
